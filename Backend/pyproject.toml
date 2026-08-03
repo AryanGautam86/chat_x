@@ -1,0 +1,4 @@
+[tool.pytest.ini_options]
+# Makes `pytest` work from Backend/ without installing the package.
+pythonpath = ["."]
+testpaths = ["tests"]

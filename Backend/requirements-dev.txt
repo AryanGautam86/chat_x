@@ -1,0 +1,6 @@
+# Development and evaluation only — not installed in the Docker image.
+-r requirements.txt
+
+pytest==8.3.3
+requests>=2.32.5                  # eval/run_evaluation.py + scripts/list_models.py
+httpx>=0.27                       # fastapi.testclient

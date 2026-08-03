@@ -1,0 +1,3 @@
+{"id": "task_add", "prompt": "Write a Python function add(a, b) that returns the sum of two integers.", "language": "python", "test_script": "fixtures/test_add.py"}
+{"id": "task_reverse", "prompt": "Write a function reverse_string(s) that returns the reversed string.", "language": "python", "test_script": "fixtures/test_reverse.py"}
+{"id": "task_max", "prompt": "Write a function find_max(nums) that returns the maximum number from a list of integers.", "language": "python", "test_script": "fixtures/test_max.py"}
