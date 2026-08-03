@@ -1,0 +1,19 @@
+**/node_modules
+**/__pycache__
+**/.pytest_cache
+**/.venv
+
+Frontend/dist
+Frontend/dev-dist
+
+# Runtime data — the container creates its own database.
+Backend/data/*.db
+Backend/data/jwt_secret
+Backend/frontend_dist
+
+# Dev-only dependencies (pytest, requests, google-generativeai).
+Backend/requirements-dev.txt
+
+.git
+.gitignore
+**/.env

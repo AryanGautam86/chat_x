@@ -1,0 +1,36 @@
+services:
+  - type: web
+    name: chatbot
+    env: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /health
+
+    envVars:
+      # Paste your Google AI key in the Render dashboard.
+      - key: GEMINI_API_KEY
+        sync: false
+
+      # Render generates this once and keeps it across deploys, so users stay
+      # signed in. Do not switch this to sync:false unless you set it yourself —
+      # a value that changes per deploy invalidates every access token.
+      - key: JWT_SECRET
+        generateValue: true
+
+      # Optional: enables the Google sign-in button. Add your Render URL to
+      # "Authorised JavaScript origins" on the OAuth client first.
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+
+      # Uncomment and point at a managed Postgres to keep accounts and uploaded
+      # documents across deploys. The container filesystem is ephemeral, so the
+      # default SQLite database is wiped every time the service restarts.
+      # - key: DATABASE_URL
+      #   fromDatabase:
+      #     name: chatbot-db
+      #     property: connectionString
+
+# Uncomment together with DATABASE_URL above.
+# databases:
+#   - name: chatbot-db
+#     plan: free
