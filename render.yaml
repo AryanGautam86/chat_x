@@ -1,6 +1,8 @@
 services:
+  # Distinct from the older "chatbot" service deployed from the Chat_boT repo,
+  # so the two run side by side on their own URLs.
   - type: web
-    name: chatbot
+    name: chat-x
     env: docker
     plan: free
     dockerfilePath: ./Dockerfile
@@ -27,10 +29,10 @@ services:
       # default SQLite database is wiped every time the service restarts.
       # - key: DATABASE_URL
       #   fromDatabase:
-      #     name: chatbot-db
+      #     name: chat-x-db
       #     property: connectionString
 
 # Uncomment together with DATABASE_URL above.
 # databases:
-#   - name: chatbot-db
+#   - name: chat-x-db
 #     plan: free
