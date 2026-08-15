@@ -3,7 +3,6 @@
 RAG chat, AI code generation and code explanation. FastAPI backend, React (Vite)
 frontend, Gemini for chat and embeddings, FAISS for retrieval.
 
-Live: https://chat-x-kfno.onrender.com
 
 ## Layout
 
