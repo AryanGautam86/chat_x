@@ -9,6 +9,23 @@ const baseURL =
 
 const API = axios.create({ baseURL });
 
+/**
+ * Human-readable message from a failed request.
+ *
+ * FastAPI sends `detail` as a string for HTTPException but as a list of objects
+ * for 422 validation errors. Rendering that list directly throws "Objects are
+ * not valid as a React child" and blanks the page, so normalise it here.
+ */
+export function errorMessage(error, fallback = "Something went wrong.") {
+  const detail = error?.response?.data?.detail;
+
+  if (typeof detail === "string" && detail.trim()) return detail;
+  if (Array.isArray(detail)) return detail[0]?.msg || fallback;
+  if (detail && typeof detail === "object") return detail.msg || fallback;
+
+  return fallback;
+}
+
 let authToken = null;
 let unauthorizedHandler = null;
 

@@ -30,10 +30,12 @@ def upload_document(
     content: str = Form(...),
     db: Session = Depends(get_db),
 ) -> dict:
-    db.add(Document(title=title, content=content))
+    doc = Document(title=title, content=content)
+    db.add(doc)
     db.commit()
+    db.refresh(doc)  # for doc.id, which ties the row to its index entry
 
-    rag.add_document(title, content)
+    rag.add_document(title, content, doc_id=doc.id)
 
     return {"message": "Document added successfully"}
 
@@ -54,10 +56,12 @@ async def upload_file(
 
     doc_title = title.strip() or PurePath(file.filename or "upload").stem
 
-    db.add(Document(title=doc_title, content=content))
+    doc = Document(title=doc_title, content=content)
+    db.add(doc)
     db.commit()
+    db.refresh(doc)
 
-    rag.add_document(doc_title, content)
+    rag.add_document(doc_title, content, doc_id=doc.id)
 
     return {
         "message": "Document added successfully",

@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { FaLock, FaEnvelope, FaUser, FaEye, FaEyeSlash } from "react-icons/fa";
 
-import API from "../api/api";
+import API, { errorMessage } from "../api/api";
 import GoogleButton from "../components/GoogleButton";
 import { useAuth } from "../hooks/useAuth";
 
@@ -56,7 +56,7 @@ function Login({ mode = "login" }) {
         signIn(data);
         navigate(target, { replace: true });
       } catch (err) {
-        setError(err.response?.data?.detail || "Google sign-in failed.");
+        setError(errorMessage(err, "Google sign-in failed."));
       } finally {
         setBusy(false);
       }
@@ -90,15 +90,7 @@ function Login({ mode = "login" }) {
       signIn(data);
       navigate(target, { replace: true });
     } catch (err) {
-      const detail = err.response?.data?.detail;
-      setError(
-        typeof detail === "string"
-          ? detail
-          : Array.isArray(detail)
-            // Pydantic validation errors arrive as a list.
-            ? detail[0]?.msg || "Please check your details."
-            : "Something went wrong. Please try again."
-      );
+      setError(errorMessage(err, "Something went wrong. Please try again."));
     } finally {
       setBusy(false);
     }

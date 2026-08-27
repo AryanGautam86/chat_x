@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { FaPaperPlane } from "react-icons/fa";
 
 import MainLayout from "../layouts/MainLayout";
-import API from "../api/api";
+import API, { errorMessage } from "../api/api";
 import ChatMessage from "../components/ChatMessage";
 import Loader from "../components/Loader";
 import AttachButton from "../components/AttachButton";
@@ -90,7 +90,7 @@ function Chat() {
       }
     } catch (err) {
       console.error(err);
-      answer = err.response?.data?.detail || "Something went wrong.";
+      answer = errorMessage(err);
     }
 
     const withAnswer = [...withUser, { sender: "ai", text: answer }];

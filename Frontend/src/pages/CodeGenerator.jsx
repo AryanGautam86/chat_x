@@ -1,6 +1,6 @@
 import { useState } from "react";
 import MainLayout from "../layouts/MainLayout";
-import API from "../api/api";
+import API, { errorMessage } from "../api/api";
 import CodeBlock from "../components/CodeBlock";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -78,7 +78,7 @@ function CodeGenerator() {
       console.error(err);
 
       const message =
-        err.response?.data?.detail || "Failed to generate code.";
+        errorMessage(err, "Failed to generate code.");
 
       setResult({
         code: message,

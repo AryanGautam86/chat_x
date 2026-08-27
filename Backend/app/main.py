@@ -12,12 +12,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from google.api_core import exceptions as google_exceptions
+from google.auth import exceptions as google_auth_exceptions
 
 from app.api.auth_routes import router as auth_router
 from app.api.routes import router
 from app.core import config
 from app.db.models import Base
-from app.db.session import engine
+from app.db.session import SessionLocal, engine
 from app.services import rag
 
 logging.basicConfig(level=logging.INFO)
@@ -40,7 +41,27 @@ async def lifespan(app: FastAPI):
     if not config.GOOGLE_CLIENT_ID:
         logger.info("GOOGLE_CLIENT_ID is not set; Google sign-in is disabled.")
 
+    # Loud, because without it the service still passes its health check and
+    # then fails every chat, upload and codegen request.
+    if not config.GEMINI_API_KEY:
+        logger.error(
+            "GEMINI_API_KEY is not set. /query, /generate_code, /explain_code "
+            "and file uploads will all fail until it is configured."
+        )
+
     rag.load_vectorstore()
+
+    # The index lives on the container filesystem, which is discarded on every
+    # restart, while the documents table survives. Re-embed the difference so
+    # uploads do not quietly drop out of retrieval. Skipped without a key,
+    # where embedding would only stall startup on credential lookups.
+    if config.GEMINI_API_KEY:
+        try:
+            with SessionLocal() as db:
+                rag.sync_from_documents(db)
+        except Exception:
+            logger.exception("Could not re-index stored documents")
+
     yield
 
 
@@ -78,6 +99,25 @@ async def handle_provider_auth(request: Request, exc: Exception):
     return JSONResponse(
         status_code=502,
         content={"detail": "The server's AI credentials were rejected. Check GEMINI_API_KEY."},
+    )
+
+
+@app.exception_handler(google_auth_exceptions.GoogleAuthError)
+async def handle_provider_credentials(request: Request, exc: Exception):
+    """Missing or unusable credentials.
+
+    Distinct from the api_core handlers below: with no GEMINI_API_KEY the client
+    falls back to Application Default Credentials and raises
+    DefaultCredentialsError, which is not a GoogleAPICallError and so reached
+    the browser as a bare 500.
+    """
+    logger.error("Google credentials are missing or unusable: %s", exc)
+    return JSONResponse(
+        status_code=502,
+        content={
+            "detail": "The server's AI credentials are not configured. "
+            "Set GEMINI_API_KEY on the service."
+        },
     )
 
 

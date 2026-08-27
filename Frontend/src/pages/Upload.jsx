@@ -1,6 +1,6 @@
 import { useState } from "react";
 import MainLayout from "../layouts/MainLayout";
-import API from "../api/api";
+import API, { errorMessage } from "../api/api";
 import AttachButton from "../components/AttachButton";
 import AttachmentChip from "../components/AttachmentChip";
 
@@ -76,7 +76,7 @@ function Upload() {
 
       setResult({
         ok: false,
-        text: error.response?.data?.detail || "Upload failed.",
+        text: errorMessage(error, "Upload failed."),
       });
     } finally {
       setLoading(false);

@@ -24,15 +24,15 @@ services:
       - key: GOOGLE_CLIENT_ID
         sync: false
 
-      # Uncomment and point at a managed Postgres to keep accounts and uploaded
-      # documents across deploys. The container filesystem is ephemeral, so the
-      # default SQLite database is wiped every time the service restarts.
-      # - key: DATABASE_URL
-      #   fromDatabase:
-      #     name: chat-x-db
-      #     property: connectionString
+      # Managed Postgres, because the container filesystem is ephemeral. With
+      # the default SQLite database every restart — including a free-plan wake
+      # from idle — dropped the users table, so accounts silently vanished and
+      # signing in failed with "Incorrect email or password."
+      - key: DATABASE_URL
+        fromDatabase:
+          name: chat-x-db
+          property: connectionString
 
-# Uncomment together with DATABASE_URL above.
-# databases:
-#   - name: chat-x-db
-#     plan: free
+databases:
+  - name: chat-x-db
+    plan: free

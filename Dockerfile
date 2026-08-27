@@ -2,13 +2,17 @@
 # Stage 1 - Build the React bundle
 # ===============================
 
-FROM node:20 AS frontend-builder
+# node:22, not node:20: Node 20 is past end-of-life, and vite 8 and eslint 10
+# both require ^20.19 || >=22.12.
+FROM node:22 AS frontend-builder
 
 WORKDIR /frontend
 
 COPY Frontend/package*.json ./
 
-RUN npm install
+# npm ci, not npm install: installs the committed lockfile exactly, so an image
+# built today resolves the same dependency tree as one built last month.
+RUN npm ci
 
 COPY Frontend .
 
