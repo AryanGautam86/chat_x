@@ -4,6 +4,7 @@ services:
   - type: web
     name: chat-x
     env: docker
+    region: oregon
     plan: free
     dockerfilePath: ./Dockerfile
     healthCheckPath: /health
@@ -35,4 +36,5 @@ services:
 
 databases:
   - name: chat-x-db
+    region: oregon
     plan: free
